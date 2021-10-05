@@ -10,6 +10,22 @@ df <- readxl::read_xlsx("data/Data extraction vaccine equity.xlsx")
 df <- df %>% 
   mutate(covidence_id = gsub("\\.0", "", covidence_id))
 
+# countries
+fun_split_country <- function(v){
+  paste0(
+    strsplit(v, split = ", ")[[1]],
+    collapse = ";"
+  )
+}
+
+df <- df %>%
+  mutate(Country = toupper(Country))
+
+df$Country_split <-  unlist(lapply(seq_along(df$Country), 
+                                   FUN = function(x)fun_split_country(df$Country[x])))
+
+
+
 # other cleaning
 
 # save cleaned file
