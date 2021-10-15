@@ -20,7 +20,7 @@ metan <- metafor::rma(n1i = tmp$number_vaccinated,
 
 metan
 forest(metan, atransf = "exp",
-       slab = paste(tmp$first_author, tmp$year_of_article))
+       slab = paste(tmp$first_author_surname, tmp$year_of_article))
 
 # examining odds ratio of being female and vaccinated
 metan <- metafor::rma(n1i = tmp$number_vaccinated,
@@ -52,7 +52,7 @@ metan <- metafor::rma(n1i = tmp$number_vaccinated,
 
 metan
 forest(metan, atransf = "exp",
-       slab = paste(tmp$first_author, tmp$year_of_article))
+       slab = paste(tmp$first_author_surname, tmp$year_of_article))
 
 # odds ratio
 metan <- metafor::rma(n1i = tmp$number_vaccinated,
