@@ -26,7 +26,7 @@ forest(metan, atransf = "exp",
 metan <- metafor::rma(n1i = tmp$number_vaccinated,
                       n2i = tmp$number_unvaccinated,
                       ai  = tmp$n_female.vaccinated,
-                      bi  = tmp$n_male.vaccinated,
+                      bi  = tmp$n_male.vaccinated, #reference group
                       ci  = tmp$n_female.unvaccinated,
                       di  = tmp$n_male.unvaccinated,
                       measure = "OR")
@@ -40,7 +40,8 @@ forest(metan, atransf = "exp",
 # relative risk
 tmp <- df %>%
   filter(!is.na(n_wealth_quintile_richest.unvaccinated), !is.na(n_wealth_quintile_poorest.unvaccinated),
-         !is.na(n_wealth_quintile_richest.vaccinated)  , !is.na(n_wealth_quintile_poorest.vaccinated))
+         !is.na(n_wealth_quintile_richest.vaccinated)  , !is.na(n_wealth_quintile_poorest.vaccinated)) %>%
+  mutate(n_wealth_quintile_richest.vaccinated = as.numeric(n_wealth_quintile_richest.vaccinated))
 
 metan <- metafor::rma(n1i = tmp$number_vaccinated,
                       n2i = tmp$number_unvaccinated,
@@ -66,3 +67,5 @@ metan <- metafor::rma(n1i = tmp$number_vaccinated,
 metan
 forest(metan, atransf = "exp",
        slab = paste(tmp$first_author, tmp$year_of_article))
+
+#  =========================================================================

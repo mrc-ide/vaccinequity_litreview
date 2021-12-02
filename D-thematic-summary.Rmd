@@ -1,0 +1,114 @@
+---
+title: "Thematic analysis"
+output:
+  pdf_document:
+    latex_engine: xelatex
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+library(dplyr)
+
+df_theme <- readxl::read_xlsx("data/Data extraction vaccine equity.xlsx",
+                        sheet = "Aims&Objectives") %>%
+   mutate(covidence_id = as.numeric(covidence_id))
+
+df_names <- read.csv("cleaned_data.csv", stringsAsFactors = FALSE)
+
+df_names <- df_names %>% 
+  select(covidence_id, first_author_surname, year_of_article) %>% 
+  distinct() %>%
+  mutate(covidence_id = as.numeric(covidence_id))
+
+df_theme <- df_theme %>% left_join(df_names, by = "covidence_id")
+```
+
+# Introduction
+
+This document takes the theme notes from the data collection spreadsheets and pastes them together with the reference. In many places, this is direct quotes so will need to be completely rewritten. The hope is that this document is an easy summary to read.
+
+# Role of equity in the impact of vaccination in LMICs
+
+```{r}
+out <- df_theme %>%
+  filter(!is.na(`role of equity on the impact of vaccination in LMICs`)) %>%
+  mutate(out_text = paste0(`role of equity on the impact of vaccination in LMICs`,
+                           " [",
+                           first_author_surname,
+                           " ",
+                           year_of_article,
+                           "].")) 
+out <- paste0(out$out_text, collapse = " ")
+
+```
+
+`r paste(out)`
+
+# How vaccine access varies geographically
+
+```{r}
+out <- df_theme %>%
+  filter(!is.na(`how vaccine access varies geographically`)) %>%
+  mutate(out_text = paste0(`how vaccine access varies geographically`,
+                           " [",
+                           first_author_surname,
+                           " ",
+                           year_of_article,
+                           "].")) 
+out <- paste0(out$out_text, collapse = " ")
+
+```
+
+`r paste(out)`
+
+# How vaccine access varies deomgraphically
+
+```{r}
+out <- df_theme %>%
+  filter(!is.na(`how vaccine access varies demographically`)) %>%
+  mutate(out_text = paste0(`how vaccine access varies demographically`,
+                           " [",
+                           first_author_surname,
+                           " ",
+                           year_of_article,
+                           "].")) 
+out <- paste0(out$out_text, collapse = " ")
+
+```
+
+`r paste(out)`
+
+# How vaccine access varies socioeconomically
+
+```{r}
+out <- df_theme %>%
+  filter(!is.na(`how vaccine access varies socioeconomically.`)) %>%
+  mutate(out_text = paste0(`how vaccine access varies socioeconomically.`,
+                           " [",
+                           first_author_surname,
+                           " ",
+                           year_of_article,
+                           "].")) 
+out <- paste0(out$out_text, collapse = " ")
+
+```
+
+`r paste(out)`
+
+# Heterogeneity in vaccination access in LMICs
+
+```{r}
+out <- df_theme %>%
+  filter(!is.na(`heterogeneity in vaccination access in LMICs`)) %>%
+  mutate(out_text = paste0(`heterogeneity in vaccination access in LMICs`,
+                           " [",
+                           first_author_surname,
+                           " ",
+                           year_of_article,
+                           "].")) 
+out <- paste0(out$out_text, collapse = " ")
+
+```
+
+`r paste(out)`
