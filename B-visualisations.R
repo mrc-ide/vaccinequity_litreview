@@ -69,7 +69,7 @@ g_world <- map_bg +
                aes(x=long, y = lat, group = group, fill = as.factor(study_count)))+ 
   
   labs( fill = "Study count") +
-  scale_fill_manual(values = blues9[c(2,4,6,8)])+
+  scale_fill_manual(values = c("grey80",viridis::plasma(7)))+
   theme(legend.position = "bottom")
 
 g_world
