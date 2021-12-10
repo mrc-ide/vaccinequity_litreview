@@ -30,6 +30,12 @@ This document takes the theme notes from the data collection spreadsheets and pa
 
 # Role of equity in the impact of vaccination in LMICs
 
+## Definition
+
+How does inequity/ heterogeneity or inequality change the *influence* of vaccination ie. if you had the same coverage of a vaccine in two populations, would the affects be different? An example of this is measles where the CFR is a function of socioeconomic factors so vaccination will prevent more deaths in a population where the CFR is higher.
+
+## Information collected
+
 ```{r}
 out <- df_theme %>%
   filter(!is.na(`role of equity on the impact of vaccination in LMICs`)) %>%
@@ -45,7 +51,30 @@ out <- paste0(out$out_text, collapse = " ")
 
 `r paste(out)`
 
+## List of studies including information
+
+```{r}
+out <- df_theme %>%
+  filter(!is.na(`role of equity on the impact of vaccination in LMICs`)) %>% 
+  arrange(first_author_surname) %>%
+  mutate(out_text = paste0("[",
+                           first_author_surname,
+                           " ",
+                           year_of_article,
+                           "], ")) 
+
+out <- paste0(out$out_text, collapse = " ")
+```
+
+`r paste(out)`
+
 # How vaccine access varies geographically
+
+## Definition
+
+How does coverage or access to immunisation change over space or geography including are there divisions between urban and rural populations.
+
+## Information collected
 
 ```{r}
 out <- df_theme %>%
@@ -62,7 +91,30 @@ out <- paste0(out$out_text, collapse = " ")
 
 `r paste(out)`
 
-# How vaccine access varies deomgraphically
+## List of studies including information
+
+```{r}
+out <- df_theme %>%
+  filter(!is.na(`how vaccine access varies geographically`)) %>% 
+  arrange(first_author_surname) %>%
+  mutate(out_text = paste0("[",
+                           first_author_surname,
+                           " ",
+                           year_of_article,
+                           "], ")) 
+
+out <- paste0(out$out_text, collapse = " ")
+```
+
+`r paste(out)`
+
+# How vaccine access varies demographically
+
+## Definition
+
+What demographic factors affect vaccine coverage or access? For example is there a difference seen by age or gender?
+
+## Information collected
 
 ```{r}
 out <- df_theme %>%
@@ -79,7 +131,30 @@ out <- paste0(out$out_text, collapse = " ")
 
 `r paste(out)`
 
+## List of studies including information
+
+```{r}
+out <- df_theme %>%
+  filter(!is.na(`how vaccine access varies demographically`)) %>% 
+  arrange(first_author_surname) %>%
+  mutate(out_text = paste0("[",
+                           first_author_surname,
+                           " ",
+                           year_of_article,
+                           "], ")) 
+
+out <- paste0(out$out_text, collapse = " ")
+```
+
+`r paste(out)`
+
 # How vaccine access varies socioeconomically
+
+## Definition
+
+What socioeconomic factors affect vaccine coverage or access? For example is there a difference seen by wealth quintile or educational attainment?
+
+## Information collected
 
 ```{r}
 out <- df_theme %>%
@@ -96,7 +171,30 @@ out <- paste0(out$out_text, collapse = " ")
 
 `r paste(out)`
 
+## List of studies including information
+
+```{r}
+out <- df_theme %>%
+  filter(!is.na(`how vaccine access varies socioeconomically.`)) %>% 
+  arrange(first_author_surname) %>%
+  mutate(out_text = paste0("[",
+                           first_author_surname,
+                           " ",
+                           year_of_article,
+                           "], ")) 
+
+out <- paste0(out$out_text, collapse = " ")
+```
+
+`r paste(out)`
+
 # Heterogeneity in vaccination access in LMICs
+
+## Definition
+
+How does access or coverage change across LMICs - is there a measure of the variation subnationally and or internationally?
+
+## Information collected
 
 ```{r}
 out <- df_theme %>%
@@ -109,6 +207,23 @@ out <- df_theme %>%
                            "].")) 
 out <- paste0(out$out_text, collapse = " ")
 
+```
+
+`r paste(out)`
+
+## List of studies including information
+
+```{r}
+out <- df_theme %>%
+  filter(!is.na(`heterogeneity in vaccination access in LMICs`)) %>% 
+  arrange(first_author_surname) %>%
+  mutate(out_text = paste0("[",
+                           first_author_surname,
+                           " ",
+                           year_of_article,
+                           "], ")) 
+
+out <- paste0(out$out_text, collapse = " ")
 ```
 
 `r paste(out)`
