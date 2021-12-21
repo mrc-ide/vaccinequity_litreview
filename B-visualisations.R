@@ -14,13 +14,17 @@ df <- read.csv("cleaned_data.csv",
 df %>%
   group_by(year_of_article) %>%
   summarise(count = n()) %>%
+  mutate(is_complete = ifelse(year_of_article==2021, FALSE, TRUE)) %>%
   
   ggplot()+
-  aes(x = year_of_article) +
-  geom_histogram(fill = "lightgreen")+
+  aes(x = year_of_article, y=count, fill = count, alpha = is_complete) +
+  geom_col()+
   theme_minimal()+
   labs(x = "Year of article",
-       y =  "Article count")
+       y =  "Article count")+
+  scale_fill_viridis_c(option = "cividis", end = 0.9)+
+  theme(legend.position = "none")+
+  scale_alpha_discrete(range = c(0.3, 1))
 
 ggsave("figures/studies_by_year.png", height = 10, width = 12)
 
@@ -69,7 +73,7 @@ g_world <- map_bg +
                aes(x=long, y = lat, group = group, fill = as.factor(study_count)))+ 
   
   labs( fill = "Study count") +
-  scale_fill_manual(values = c("grey80",viridis::plasma(7)))+
+  scale_fill_manual(values = c("azure2",viridis::cividis(7)))+
   theme(legend.position = "bottom")
 
 g_world
