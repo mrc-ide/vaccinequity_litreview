@@ -16,5 +16,5 @@ run_meta <- function(df, cols_to_use, outp = "RR"){
   forest(metan, atransf = "exp",
          slab = paste(tmp$first_author_surname, tmp$year_of_article))
   
-  return(list(metan = metan,  ref_grp <- v[2]))
+  return(list(metan = metan,  ref_grp = v[2]))
 }

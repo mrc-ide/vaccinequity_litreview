@@ -11,24 +11,18 @@ df <- df %>% janitor::clean_names()
 # examining relative risk of being female and vaccinated
 cols_to_use <- names(df)[grep("male", names(df))]
 
-run_meta(df, cols_to_use, outp="RR")
-
-run_meta(df, cols_to_use, outp="OR")
+gender_out <- run_meta(df, cols_to_use, outp="OR")
 
 # wealth =========================================================================
 # relative risk
 cols_to_use <- names(df)[grep("richest|poorest", names(df))]
 
-run_meta(df, cols_to_use, outp="RR")
-
-run_meta(df, cols_to_use, outp="OR")
+wealth_out <- run_meta(df, cols_to_use, outp="OR")
 
 # urban/rural =========================================================================
 cols_to_use <- names(df)[grep("urban|rural", names(df))]
 
-run_meta(df, cols_to_use, outp="RR")
-
-run_meta(df, cols_to_use, outp="OR")
+rural_out <- run_meta(df, cols_to_use, outp="OR")
 
 # mothers edu =========================================================================
 df <- df %>% rowwise() %>%
@@ -43,13 +37,37 @@ df <- df %>% rowwise() %>%
 
 cols_to_use <- names(df)[grep("none|r_any", names(df))]
 
-run_meta(df, cols_to_use, outp="RR")
+edu_out <- run_meta(df, cols_to_use, outp="OR")
 
-run_meta(df, cols_to_use, outp="OR")
-
-# urban/rural =========================================================================
+# marital status =========================================================================
 cols_to_use <- names(df)[grep("married", names(df))]
 
-run_meta(df, cols_to_use, outp="RR")
+married_out <- run_meta(df, cols_to_use, outp="OR")
 
-run_meta(df, cols_to_use, outp="OR")
+# combine =========================================================================
+out <- data.frame(OR = c(gender_out$metan$beta[1], #this needs improving
+                         wealth_out$metan$beta[1],
+                         rural_out$metan$beta[1],
+                         edu_out$metan$beta[1],
+                         married_out$metan$beta[1]),
+                  lb = c(gender_out$metan$ci.lb,
+                          wealth_out$metan$ci.lb,
+                          rural_out$metan$ci.lb,
+                          edu_out$metan$ci.lb,
+                          married_out$metan$ci.lb),
+                  ub = c(gender_out$metan$ci.ub,
+                          wealth_out$metan$ci.ub,
+                          rural_out$metan$ci.ub,
+                          edu_out$metan$ci.ub,
+                          married_out$metan$ci.ub),
+                  p = c(gender_out$metan$pval,
+                         wealth_out$metan$pval,
+                         rural_out$metan$pval,
+                         edu_out$metan$pval,
+                         married_out$metan$pval),
+                  ref = c(gender_out$ref_grp,
+                           wealth_out$ref_grp,
+                           rural_out$ref_grp,
+                           edu_out$ref_grp,
+                           married_out$ref_grp))
+write.csv(out, "metaanalysis_summary.csv", row.names = FALSE)
