@@ -1,71 +1,55 @@
 library(dplyr)
 library(ggplot2)
 library(metafor)
+R.utils::sourceDirectory("functions", modifiedOnly = FALSE)
 
 df <- read.csv("cleaned_data.csv", stringsAsFactors = FALSE)
 
+df <- df %>% janitor::clean_names()
+
 # gender =========================================================================
 # examining relative risk of being female and vaccinated
-tmp <- df %>%
-  filter(!is.na(n_female.unvaccinated), !is.na(n_male.unvaccinated),
-         !is.na(n_female.vaccinated)  , !is.na(n_male.vaccinated))
+cols_to_use <- names(df)[grep("male", names(df))]
 
-metan <- metafor::rma(n1i = tmp$number_vaccinated,
-                      n2i = tmp$number_unvaccinated,
-                      ai  = tmp$n_female.vaccinated,
-                      bi  = tmp$n_male.vaccinated, #reference group
-                      ci  = tmp$n_female.unvaccinated,
-                      di  = tmp$n_male.unvaccinated,
-                      measure = "RR")
+run_meta(df, cols_to_use, outp="RR")
 
-metan
-forest(metan, atransf = "exp",
-       slab = paste(tmp$first_author_surname, tmp$year_of_article))
-
-# examining odds ratio of being female and vaccinated
-metan <- metafor::rma(n1i = tmp$number_vaccinated,
-                      n2i = tmp$number_unvaccinated,
-                      ai  = tmp$n_female.vaccinated,
-                      bi  = tmp$n_male.vaccinated, #reference group
-                      ci  = tmp$n_female.unvaccinated,
-                      di  = tmp$n_male.unvaccinated,
-                      measure = "OR")
-
-metan
-
-forest(metan, atransf = "exp",
-       slab = paste(tmp$first_author, tmp$year_of_article))
+run_meta(df, cols_to_use, outp="OR")
 
 # wealth =========================================================================
 # relative risk
-tmp <- df %>%
-  filter(!is.na(n_wealth_quintile_richest.unvaccinated), !is.na(n_wealth_quintile_poorest.unvaccinated),
-         !is.na(n_wealth_quintile_richest.vaccinated)  , !is.na(n_wealth_quintile_poorest.vaccinated)) %>%
-  mutate(n_wealth_quintile_richest.vaccinated = as.numeric(n_wealth_quintile_richest.vaccinated))
+cols_to_use <- names(df)[grep("richest|poorest", names(df))]
 
-metan <- metafor::rma(n1i = tmp$number_vaccinated,
-                      n2i = tmp$number_unvaccinated,
-                      ai  = tmp$n_wealth_quintile_richest.vaccinated,
-                      bi  = tmp$n_wealth_quintile_poorest.vaccinated, #reference group
-                      ci  = tmp$n_wealth_quintile_richest.unvaccinated,
-                      di  = tmp$n_wealth_quintile_poorest.unvaccinated,
-                      measure = "RR")
+run_meta(df, cols_to_use, outp="RR")
 
-metan
-forest(metan, atransf = "exp",
-       slab = paste(tmp$first_author_surname, tmp$year_of_article))
+run_meta(df, cols_to_use, outp="OR")
 
-# odds ratio
-metan <- metafor::rma(n1i = tmp$number_vaccinated,
-                      n2i = tmp$number_unvaccinated,
-                      ai  = tmp$n_wealth_quintile_richest.vaccinated,
-                      bi  = tmp$n_wealth_quintile_poorest.vaccinated, #reference group
-                      ci  = tmp$n_wealth_quintile_richest.unvaccinated,
-                      di  = tmp$n_wealth_quintile_poorest.unvaccinated,
-                      measure = "OR")
+# urban/rural =========================================================================
+cols_to_use <- names(df)[grep("urban|rural", names(df))]
 
-metan
-forest(metan, atransf = "exp",
-       slab = paste(tmp$first_author, tmp$year_of_article))
+run_meta(df, cols_to_use, outp="RR")
 
-#  =========================================================================
+run_meta(df, cols_to_use, outp="OR")
+
+# mothers edu =========================================================================
+df <- df %>% rowwise() %>%
+  mutate(n_mother_any_vaccinated = sum(n_mother_education_primary_vaccinated,
+                      n_mother_education_secondary_vaccinated, n_mother_education_higher_vaccinated,
+                      na.rm = TRUE),
+                    n_mother_any_unvaccinated = sum(n_mother_education_primary_unvaccinated,
+                      n_mother_education_secondary_unvaccinated, n_mother_education_higher_unvaccinated,
+                      na.rm=TRUE)) %>% ungroup() %>%
+  mutate(n_mother_any_unvaccinated = ifelse(n_mother_any_unvaccinated==0,NA, n_mother_any_unvaccinated),
+         n_mother_any_vaccinated = ifelse(n_mother_any_vaccinated==0,NA, n_mother_any_vaccinated))
+
+cols_to_use <- names(df)[grep("none|r_any", names(df))]
+
+run_meta(df, cols_to_use, outp="RR")
+
+run_meta(df, cols_to_use, outp="OR")
+
+# urban/rural =========================================================================
+cols_to_use <- names(df)[grep("married", names(df))]
+
+run_meta(df, cols_to_use, outp="RR")
+
+run_meta(df, cols_to_use, outp="OR")

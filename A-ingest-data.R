@@ -27,7 +27,29 @@ df <- df %>%
 df$Country_split <-  unlist(lapply(seq_along(df$Country), 
                                    FUN = function(x)fun_split_country(df$Country[x])))
 
+# clean year of data
+df <- df %>% mutate(year_of_data = gsub(" ", "", year_of_data)) %>%
+  mutate(year_of_data = gsub("\\.0", "", year_of_data)) %>%
+  mutate(year_of_data = gsub("various", "", year_of_data)) %>%
+  mutate(year_of_data = gsub("–", "-", year_of_data))
+
+split_me_years <- function(string){
+  split_string <- strsplit(string, "-")[[1]]
+  paste0(split_string[1] : split_string[length(split_string)],collapse = ",")
+}
+
+df <- df %>%
+  rowwise() %>%
+  mutate(year_of_data = ifelse(grepl("-", year_of_data),
+                               split_me_years(year_of_data), 
+                               year_of_data)) 
+df <- df %>%
+  mutate(year_of_data_min = as.numeric(min(strsplit(year_of_data, ",")[[1]])),
+         year_of_data_max = as.numeric(max(strsplit(year_of_data, ",")[[1]]))) %>%
+  ungroup() 
+
 # other cleaning
+
 
 # add grades
 df <-  df %>% mutate(covidence_id = as.integer(covidence_id)) %>% 
