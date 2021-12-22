@@ -27,6 +27,12 @@ df <- df %>%
 df$Country_split <-  unlist(lapply(seq_along(df$Country), 
                                    FUN = function(x)fun_split_country(df$Country[x])))
 
+#easy country
+df <- df %>% mutate(simple_country = case_when(grepl(";", Country_split)~ "VARIOUS",
+                                               grepl("COUNTRIES", Country_split)~"VARIOUS",
+                                               grepl("LMIC", Country_split)~"VARIOUS",
+                                               TRUE~Country_split))
+
 # clean year of data
 df <- df %>% mutate(year_of_data = gsub(" ", "", year_of_data)) %>%
   mutate(year_of_data = gsub("\\.0", "", year_of_data)) %>%

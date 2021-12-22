@@ -17,7 +17,7 @@ df_theme <- readxl::read_xlsx("data/Data extraction vaccine equity.xlsx",
 df_names <- read.csv("cleaned_data.csv", stringsAsFactors = FALSE)
 
 df_names <- df_names %>% 
-  select(covidence_id, first_author_surname, year_of_article) %>% 
+  select(covidence_id, first_author_surname, year_of_article, simple_country) %>% 
   distinct() %>%
   mutate(covidence_id = as.numeric(covidence_id))
 
@@ -45,6 +45,12 @@ out <- df_theme %>%
                            " ",
                            year_of_article,
                            "].")) 
+
+out <- out %>% 
+  group_by(simple_country) %>% 
+  summarise(out_country = paste0(out_text, collapse = " ")) %>%
+  mutate(out_text = paste0(simple_country,": ", out_country))
+
 out <- paste0(out$out_text, collapse = " ")
 
 ```
@@ -85,7 +91,13 @@ out <- df_theme %>%
                            " ",
                            year_of_article,
                            "].")) 
+out <- out %>% 
+  group_by(simple_country) %>% 
+  summarise(out_country = paste0(out_text, collapse = " ")) %>%
+  mutate(out_text = paste0(simple_country,": ", out_country))
+
 out <- paste0(out$out_text, collapse = " ")
+
 
 ```
 
@@ -125,7 +137,13 @@ out <- df_theme %>%
                            " ",
                            year_of_article,
                            "].")) 
+out <- out %>% 
+  group_by(simple_country) %>% 
+  summarise(out_country = paste0(out_text, collapse = " ")) %>%
+  mutate(out_text = paste0(simple_country,": ", out_country))
+
 out <- paste0(out$out_text, collapse = " ")
+
 
 ```
 
@@ -165,7 +183,13 @@ out <- df_theme %>%
                            " ",
                            year_of_article,
                            "].")) 
+out <- out %>% 
+  group_by(simple_country) %>% 
+  summarise(out_country = paste0(out_text, collapse = " ")) %>%
+  mutate(out_text = paste0(simple_country,": ", out_country))
+
 out <- paste0(out$out_text, collapse = " ")
+
 
 ```
 
@@ -205,7 +229,13 @@ out <- df_theme %>%
                            " ",
                            year_of_article,
                            "].")) 
+out <- out %>% 
+  group_by(simple_country) %>% 
+  summarise(out_country = paste0(out_text, collapse = " ")) %>%
+  mutate(out_text = paste0(simple_country,": ", out_country))
+
 out <- paste0(out$out_text, collapse = " ")
+
 
 ```
 
