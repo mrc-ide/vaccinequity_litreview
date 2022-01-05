@@ -52,19 +52,22 @@ homemade_forest <- function(meta_in, cols_to_use, axistitle){
                    y = reorder(study, year_of_data_min),
                    shape = rem,
                    colour = col,
-                   size = size)) +
+                   size = size,
+                   alpha = rem)) +
     geom_errorbarh(aes(xmin = ci.lb,
                        xmax = ci.ub,
                        y = reorder(study, year_of_data_min),
-                       colour = col),
-                   alpha = 0.4, size=1)+
+                       colour = col,
+                       alpha = rem), 
+                   size=1)+
     geom_text(aes(label = paste0(round(yi, 2), 
                                  " [", round(ci.lb,2), 
                                  ", ", 
                                  round(ci.ub,2), "]"),
                   x = maxvalue + 0.3,
                   y = reorder(study, year_of_data_min),
-                  colour = col),
+                  colour = col,
+                  alpha = rem),
               size = 4)+
     geom_vline(xintercept = 0, colour = viridis::turbo(9)[8], linetype = "dashed", size = 1)+
     
@@ -72,6 +75,7 @@ homemade_forest <- function(meta_in, cols_to_use, axistitle){
     labs(y = "", x = axistitle)+
     theme_minimal() +
     scale_shape_manual(values = c(15, 18)) +
+    scale_alpha_discrete(range = c(0.5, 1))+
     theme(legend.position = "none", axis.text = element_text(size = 12)) +
     scale_size(range = c(1, 5))+
     scale_colour_manual(values = c("A" = viridis::turbo(10)[10],
