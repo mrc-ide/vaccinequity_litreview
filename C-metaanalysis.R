@@ -18,26 +18,44 @@ p <- homemade_forest(gender_out, cols_to_use,
 
 ggsave(plot = p, filename = "figures/gender_OR.png", height = 12, width = 10)
 
+# additionally interested in the trend over time
+p <- OR_over_time(gender_out, cols_to_use, 
+             "Adjusted odds ratio of being vaccinated given female compared to male")
+
+ggsave(plot = p, filename = "figures/gender_OR_over_time.png", height = 12, width = 10)
+
 # wealth =========================================================================
 # relative risk
 cols_to_use <- names(df)[grep("richest|poorest", names(df))]
 
 wealth_out <- run_meta(df, cols_to_use, outp="OR")
 
-p <- homemade_forest(wealth_out, cols_to_use,
-                     "Adjusted odds ratio of being vaccinated given richest compared to poorest wealth quintile")
+axsttl <- "Adjusted odds ratio of being vaccinated given richest compared to poorest wealth quintile"
+
+p <- homemade_forest(wealth_out, cols_to_use, axsttl)
 
 ggsave(plot = p, filename = "figures/wealth_OR.png", height = 12, width = 10)
+
+# additionally interested in the trend over time
+p <- OR_over_time(wealth_out, cols_to_use, axsttl)
+
+ggsave(plot = p, filename = "figures/wealth_OR_over_time.png", height = 12, width = 10)
 
 # urban/rural =========================================================================
 cols_to_use <- names(df)[grep("urban|rural", names(df))]
 
 rural_out <- run_meta(df, cols_to_use, outp="OR")
 
-p <- homemade_forest(rural_out, cols_to_use,
-                     "Adjusted odds ratio of being vaccinated given rural compared to urban")
+axsttl <- "Adjusted odds ratio of being vaccinated given rural compared to urban"
+
+p <- homemade_forest(rural_out, cols_to_use,axsttl)
 
 ggsave(plot = p, filename = "figures/urban_OR.png", height = 12, width = 10)
+
+# additionally interested in the trend over time
+p <- OR_over_time(rural_out, cols_to_use, axsttl)
+
+ggsave(plot = p, filename = "figures/urban_OR_over_time.png", height = 12, width = 10)
 
 # mothers edu =========================================================================
 df <- df %>% rowwise() %>%
@@ -50,24 +68,36 @@ df <- df %>% rowwise() %>%
   mutate(n_mother_any_unvaccinated = ifelse(n_mother_any_unvaccinated==0,NA, n_mother_any_unvaccinated),
          n_mother_any_vaccinated = ifelse(n_mother_any_vaccinated==0,NA, n_mother_any_vaccinated))
 
+axsttl <- "Adjusted odds ratio of being vaccinated given mother uneducated compared to any education"
+
 cols_to_use <- names(df)[grep("none|r_any", names(df))]
 
 edu_out <- run_meta(df, cols_to_use, outp="OR")
 
-p <- homemade_forest(edu_out, cols_to_use,
-                     "Adjusted odds ratio of being vaccinated given mother uneducated compared to any education")
+p <- homemade_forest(edu_out, cols_to_use, axsttl)
 
 ggsave(plot = p, filename = "figures/edu_OR.png", height = 12, width = 10)
+
+# additionally interested in the trend over time
+p <- OR_over_time(edu_out, cols_to_use, axsttl)
+
+ggsave(plot = p, filename = "figures/edu_OR_over_time.png", height = 12, width = 10)
 
 # marital status =========================================================================
 cols_to_use <- names(df)[grep("married", names(df))]
 
 married_out <- run_meta(df, cols_to_use, outp="OR")
 
-p <- homemade_forest(married_out, cols_to_use,
-                     "Adjusted odds ratio of being vaccinated given mother married compared to unmarried")
+axsttl <- "Adjusted odds ratio of being vaccinated given mother married compared to unmarried"
+
+p <- homemade_forest(married_out, cols_to_use,axsttl)
 
 ggsave(plot = p, filename = "figures/married_OR.png", height = 12, width = 10)
+
+# additionally interested in the trend over time
+p <- OR_over_time(married_out, cols_to_use, axsttl)
+
+ggsave(plot = p, filename = "figures/married_OR_over_time.png", height = 12, width = 10)
 
 # combine =========================================================================
 list_out <- list(gender_out, wealth_out,rural_out, edu_out,married_out)
