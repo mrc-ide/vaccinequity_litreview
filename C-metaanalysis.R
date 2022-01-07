@@ -1,6 +1,8 @@
 library(dplyr)
 library(ggplot2)
 library(metafor)
+library(MetBrewer)
+
 R.utils::sourceDirectory("functions", modifiedOnly = FALSE)
 
 df <- read.csv("cleaned_data.csv", stringsAsFactors = FALSE)
@@ -13,14 +15,14 @@ cols_to_use <- names(df)[grep("male", names(df))]
 
 gender_out <- run_meta(df, cols_to_use, outp="OR")
 
-p <- homemade_forest(gender_out, cols_to_use, 
-                     "Adjusted odds ratio of being vaccinated given female compared to male")
+axsttl <- "Log odds ratio of being vaccinated given female compared to male"
+
+p <- homemade_forest(gender_out, cols_to_use, axsttl)
 
 ggsave(plot = p, filename = "figures/gender_OR.png", height = 12, width = 10)
 
 # additionally interested in the trend over time
-p <- OR_over_time(gender_out, cols_to_use, 
-             "Adjusted odds ratio of being vaccinated given female compared to male")
+p <- OR_over_time(gender_out, cols_to_use, axsttl)
 
 ggsave(plot = p, filename = "figures/gender_OR_over_time.png", height = 12, width = 10)
 
@@ -30,7 +32,7 @@ cols_to_use <- names(df)[grep("richest|poorest", names(df))]
 
 wealth_out <- run_meta(df, cols_to_use, outp="OR")
 
-axsttl <- "Adjusted odds ratio of being vaccinated given richest compared to poorest wealth quintile"
+axsttl <- "Log odds ratio of being vaccinated given richest compared to poorest wealth quintile"
 
 p <- homemade_forest(wealth_out, cols_to_use, axsttl)
 
@@ -46,7 +48,7 @@ cols_to_use <- names(df)[grep("urban|rural", names(df))]
 
 rural_out <- run_meta(df, cols_to_use, outp="OR")
 
-axsttl <- "Adjusted odds ratio of being vaccinated given rural compared to urban"
+axsttl <- "Log odds ratio of being vaccinated given rural compared to urban"
 
 p <- homemade_forest(rural_out, cols_to_use,axsttl)
 
@@ -68,7 +70,7 @@ df <- df %>% rowwise() %>%
   mutate(n_mother_any_unvaccinated = ifelse(n_mother_any_unvaccinated==0,NA, n_mother_any_unvaccinated),
          n_mother_any_vaccinated = ifelse(n_mother_any_vaccinated==0,NA, n_mother_any_vaccinated))
 
-axsttl <- "Adjusted odds ratio of being vaccinated given mother uneducated compared to any education"
+axsttl <- "Log odds ratio of being vaccinated given mother uneducated compared to any education"
 
 cols_to_use <- names(df)[grep("none|r_any", names(df))]
 
@@ -88,7 +90,7 @@ cols_to_use <- names(df)[grep("married", names(df))]
 
 married_out <- run_meta(df, cols_to_use, outp="OR")
 
-axsttl <- "Adjusted odds ratio of being vaccinated given mother married compared to unmarried"
+axsttl <- "Log odds ratio of being vaccinated given mother married compared to unmarried"
 
 p <- homemade_forest(married_out, cols_to_use,axsttl)
 

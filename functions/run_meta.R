@@ -7,9 +7,9 @@ run_meta <- function(df, cols_to_use, outp = "RR"){
   
   #aggregate 
   tmp <- tmp %>% 
-    select(year_of_data_min, year_of_data_max, year_of_article, first_author_surname, covidence_id,
+    select(year_of_data_min, year_of_data_max, year_of_article, first_author_surname, covidence_id, simple_country,
            !!cols_to_use) %>%
-    group_by(year_of_data_min, year_of_data_max, year_of_article, first_author_surname, covidence_id) %>%
+    group_by(year_of_data_min, year_of_data_max, year_of_article, first_author_surname, covidence_id, simple_country) %>%
     summarise_all(sum, na.rm = TRUE)
   
   metan <- metafor::rma(n1i = rowSums(tmp[,v], na.rm = TRUE),

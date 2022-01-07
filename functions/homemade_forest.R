@@ -14,12 +14,13 @@ homemade_forest <- function(meta_in, cols_to_use, axistitle){
                     ci.ub = as.numeric(tmp_rma$ci.ub),
                     rem = TRUE,
                     year_of_data_min = 1900,
-                    pval = tmp_rma$pval)
+                    pval = tmp_rma$pval,
+                    simple_country = "")
   
   #stick it together and tidy
   tmp <- tmp_escalc %>%
     select( yi, ci.lb, ci.ub,covidence_id, year_of_article, first_author_surname, 
-            year_of_data_min, year_of_data_max,
+            year_of_data_min, year_of_data_max, simple_country,
             !!cols_to_use) %>%
     mutate(rem = FALSE) %>%
     bind_rows(rem) %>%
@@ -27,11 +28,14 @@ homemade_forest <- function(meta_in, cols_to_use, axistitle){
     mutate(data_years = ifelse(year_of_data_min == year_of_data_max, 
                                paste0(year_of_data_max),
                                paste0(year_of_data_min, "-", year_of_data_max))) %>%
+    mutate(simple_country = R.utils::capitalize(tolower(simple_country))) %>%
+    mutate(simple_country = ifelse(simple_country == "South africa", "South Africa", simple_country)) %>%
     mutate(study = paste0(first_author_surname, " ", 
-                          year_of_article, " (", data_years, ")")) %>%
+                          year_of_article, " (", data_years, ") ", 
+                          simple_country )) %>%
     mutate(study = ifelse(rem %in% TRUE, " Random Effects Model", study)) 
   
-
+  
   #get sizes as vaccinated + unvaxxed
   tmp$size <- rowSums(tmp[, cols_to_use], na.rm = TRUE) 
   tmp <- tmp %>% mutate(size = ifelse(study == " Random Effects Model", 5000, size))
@@ -43,21 +47,25 @@ homemade_forest <- function(meta_in, cols_to_use, axistitle){
                                         yi < 0 ~ "C")) %>%
     mutate(col = factor(col, levels = c("A", "B", "C", "D")))
   
+  ncol <- length(unique(tmp$simple_country))
+  palcols <- c("black", rep(gtools::permute(met.brewer("Juarez")), length.out = ncol-1) )
   
   tmp %>% 
+    arrange(simple_country,year_of_data_min) %>%
+    mutate(study = factor(study, levels = study)) %>%
     unique() %>%
     filter(!is.na(yi)) %>%
     ggplot() +
     geom_point(aes(x = yi,
-                   y = reorder(study, year_of_data_min),
+                   y = study,
                    shape = rem,
-                   colour = col,
+                   colour = simple_country,
                    size = size,
                    alpha = rem)) +
     geom_errorbarh(aes(xmin = ci.lb,
                        xmax = ci.ub,
-                       y = reorder(study, year_of_data_min),
-                       colour = col,
+                       y = study,
+                       colour = simple_country,
                        alpha = rem), 
                    size=1)+
     geom_text(aes(label = paste0(round(yi, 2), 
@@ -65,9 +73,8 @@ homemade_forest <- function(meta_in, cols_to_use, axistitle){
                                  ", ", 
                                  round(ci.ub,2), "]"),
                   x = maxvalue + 0.3,
-                  y = reorder(study, year_of_data_min),
-                  colour = col,
-                  alpha = rem),
+                  y = study,
+                  colour = simple_country),
               size = 4)+
     geom_vline(xintercept = 0, colour = viridis::turbo(9)[8], linetype = "dashed", size = 1)+
     
@@ -75,12 +82,9 @@ homemade_forest <- function(meta_in, cols_to_use, axistitle){
     labs(y = "", x = axistitle)+
     theme_minimal() +
     scale_shape_manual(values = c(15, 18)) +
-    scale_alpha_discrete(range = c(0.5, 1))+
+    scale_alpha_discrete(range = c(0.7, 1))+
     theme(legend.position = "none", axis.text = element_text(size = 12)) +
     scale_size(range = c(1, 5))+
-    scale_colour_manual(values = c("A" = viridis::turbo(10)[10],
-                                   "B" = viridis::turbo(10)[8],
-                                   "C" = viridis::turbo(10)[2],
-                                   "D" = viridis::turbo(10)[1]))
+    scale_color_manual(values = palcols)
   
- }
+}
