@@ -30,7 +30,7 @@ run_meta <- function(df, cols_to_use, outp = "RR"){
                                 data = tmp)
   
   metan
-  forest(metan, #atransf = "exp",
+  forest(metan,
          slab = paste(tmp$first_author_surname, tmp$year_of_article))
   
   return(list(metan = metan,  ref_grp = v[2], escalc_out = escalc_out))
