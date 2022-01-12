@@ -110,4 +110,6 @@ out <- bind_rows(lapply(1:length(list_out),
                                                      p  = list_out[[x]]$metan$pval,
                                                      ref = list_out[[x]]$ref_grp)}))
 
+out <- out %>% mutate(prob = exp(OR)/(1+exp(OR)))
+
 write.csv(out, "metaanalysis_summary.csv", row.names = FALSE)
