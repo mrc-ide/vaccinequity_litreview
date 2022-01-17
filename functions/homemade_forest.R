@@ -1,4 +1,4 @@
-homemade_forest <- function(meta_in, cols_to_use, axistitle){
+homemade_forest <- function(meta_in, cols_to_use, axistitle, lg = FALSE){
   # split out summary and rma
   tmp_escalc <- summary(meta_in$escalc_out) %>% 
     mutate_at(vars(cols_to_use), as.numeric)
@@ -7,6 +7,10 @@ homemade_forest <- function(meta_in, cols_to_use, axistitle){
   #get range for plots
   maxvalue <- max(tmp_escalc$ci.ub)
   minvalue <- min(tmp_escalc$ci.lb)
+  if(!lg){
+    maxvalue <- exp(maxvalue)
+    minvalue <- exp(minvalue)
+  }
   
   #pick out rma
   rem <- data.frame(yi = as.numeric(tmp_rma$beta),
@@ -50,11 +54,16 @@ homemade_forest <- function(meta_in, cols_to_use, axistitle){
   ncol <- length(unique(tmp$simple_country))
   palcols <- c("black", rep(gtools::permute(met.brewer("Juarez")), length.out = ncol-1) )
   
+  if(!lg){
+    tmp <- tmp %>% mutate(yi = exp(yi), ci.lb = exp(ci.lb), ci.ub = exp(ci.ub))
+  }
+  
   tmp %>% 
     arrange(simple_country,year_of_data_min) %>%
     mutate(study = factor(study, levels = study)) %>%
     unique() %>%
     filter(!is.na(yi)) %>%
+    
     ggplot() +
     geom_point(aes(x = yi,
                    y = study,
@@ -76,9 +85,9 @@ homemade_forest <- function(meta_in, cols_to_use, axistitle){
                   y = study,
                   colour = simple_country),
               size = 4)+
-    geom_vline(xintercept = 0, colour = viridis::turbo(9)[8], linetype = "dashed", size = 1)+
+    geom_vline(xintercept = ifelse(lg,0,1), colour = viridis::turbo(9)[8], linetype = "dashed", size = 1)+
     
-    coord_cartesian(xlim = c(minvalue,maxvalue+0.6))+
+    coord_cartesian(xlim = c(minvalue,maxvalue+0.8))+
     labs(y = "", x = axistitle)+
     theme_minimal() +
     scale_shape_manual(values = c(15, 18)) +

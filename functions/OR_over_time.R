@@ -1,4 +1,4 @@
-OR_over_time <- function(meta_in, cols_to_use, axistitle){
+meas_over_time <- function(meta_in, cols_to_use, axistitle, meas){
   to_plot <- meta_in$escalc_out %>%
     rowwise() %>%
     mutate(mean_data_year = mean(c(year_of_data_min, year_of_data_max)))
@@ -22,6 +22,6 @@ OR_over_time <- function(meta_in, cols_to_use, axistitle){
     geom_hline(yintercept = 0, linetype = "dashed")+
     labs(x = "Year/s of data",
          y = axistitle)+
-    ggtitle(paste0("Relationship between year of data and adjusted odds ratio (pvalue = ", 
+    ggtitle(paste0("Relationship between year of data and adjusted ",meas," (pvalue = ", 
                    round(pval,3), ")"))
 }
