@@ -1,5 +1,6 @@
 run_meta <- function(df, cols_to_use, outp = "RR"){
   tmp <- df %>% filter_at(vars(cols_to_use), all_vars(!is.na(.))) %>% 
+    filter(used_in_meta=="TRUE") %>%
     mutate_at(vars(cols_to_use), as.numeric)
   
   unv <- cols_to_use[grep("unv", cols_to_use)]

@@ -28,6 +28,10 @@ p <- meas_over_time(gender_out, cols_to_use, axsttl, meas)
 
 ggsave(plot = p, filename = paste0("figures/gender_",meas, "_over_time.png"), height = 12, width = 10)
 
+#ids
+ids <- data.frame(type = "gender",
+                  ids = paste0(gender_out$escalc_out$covidence_id %>% unique(), collapse = ", "))
+
 # wealth =========================================================================
 # relative risk
 cols_to_use <- names(df)[grep("richest|poorest", names(df))]
@@ -46,6 +50,11 @@ p <- meas_over_time(wealth_out, cols_to_use, axsttl, meas)
 
 ggsave(plot = p, filename = paste0("figures/wealth_",meas,"_over_time.png"), height = 12, width = 10)
 
+#ids
+ids <- ids %>%
+  bind_rows(data.frame(type = "wealth",
+                       ids = paste0(wealth_out$escalc_out$covidence_id %>% unique(), collapse = ", ")))
+
 # urban/rural =========================================================================
 cols_to_use <- names(df)[grep("urban|rural", names(df))]
 
@@ -61,6 +70,11 @@ ggsave(plot = p, filename = paste0("figures/urban_",meas,".png"), height = 12, w
 p <- meas_over_time(rural_out, cols_to_use, axsttl,meas)
 
 ggsave(plot = p, filename = paste0("figures/urban_",meas,"_over_time.png"), height = 12, width = 10)
+
+#ids
+ids <- ids %>%
+  bind_rows(data.frame(type = "urban",
+                       ids = paste0(rural_out$escalc_out$covidence_id %>% unique(), collapse = ", ")))
 
 # mothers edu =========================================================================
 df <- df %>% rowwise() %>%
@@ -88,6 +102,11 @@ p <- meas_over_time(edu_out, cols_to_use, axsttl, meas)
 
 ggsave(plot = p, filename = paste0("figures/edu_",meas,"_over_time.png"), height = 12, width = 10)
 
+#ids
+ids <- ids %>%
+  bind_rows(data.frame(type = "edu",
+                       ids = paste0(edu_out$escalc_out$covidence_id %>% unique(), collapse = ", ")))
+
 # marital status =========================================================================
 cols_to_use <- names(df)[grep("married", names(df))]
 
@@ -104,6 +123,10 @@ p <- meas_over_time(married_out, cols_to_use, axsttl, meas)
 
 ggsave(plot = p, filename = paste0("figures/married_", meas,"_over_time.png"), height = 12, width = 10)
 
+ids <- ids %>%
+  bind_rows(data.frame(type = "married",
+                       ids = paste0(married_out$escalc_out$covidence_id %>% unique(), collapse = ", ")))
+
 # combine =========================================================================
 list_out <- list(gender_out, wealth_out,rural_out, edu_out,married_out)
 out <- bind_rows(lapply(1:length(list_out), 
@@ -119,3 +142,5 @@ out <- out %>% mutate(exp_out = exp(out_meas), exp_lb = exp(lb), exp_ub = exp(ub
 names(out)[names(out) == "out_meas"] <- meas
 
 write.csv(out, "metaanalysis_summary.csv", row.names = FALSE)
+
+write.csv(ids, "metaanalysis_refs.csv", row.names = FALSE)
