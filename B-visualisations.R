@@ -96,4 +96,6 @@ g_world <- map_bg +
 g_world
 
 ggsave("figures/studies_by_country.png", height = 10, width = 12)
+
+world_map %>%ungroup() %>% select(region, tot_count) %>% unique() %>% write.csv("study_count.csv", row.names = FALSE)
 #================================================================================================================
