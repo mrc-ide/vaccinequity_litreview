@@ -34,12 +34,15 @@ ids <- data.frame(type = "gender",
 
 # wealth =========================================================================
 # relative risk
-cols_to_use <- names(df)[grep("richest|poorest", names(df))]
+#cols_to_use <- names(df)[grep("richest|poorest", names(df))]
+
+# change order
+cols_to_use <- c("n_wealth_quintile_poorest_vaccinated", "n_wealth_quintile_poorest_unvaccinated", "n_wealth_quintile_richest_vaccinated", "n_wealth_quintile_richest_unvaccinated")
 
 wealth_out <- run_meta(df, cols_to_use, outp=meas)
 
 axsttl <- paste0("Log ", tolower(meas_long),
-                 " of being vaccinated given richest compared to poorest wealth quintile")
+                 " of being vaccinated given poorest compared to richest wealth quintile")
 
 p <- homemade_forest(wealth_out, cols_to_use, axsttl, lg=TRUE)
 
@@ -87,7 +90,7 @@ df <- df %>% rowwise() %>%
   mutate(n_mother_any_unvaccinated = ifelse(n_mother_any_unvaccinated==0,NA, n_mother_any_unvaccinated),
          n_mother_any_vaccinated = ifelse(n_mother_any_vaccinated==0,NA, n_mother_any_vaccinated))
 
-axsttl <- paste(meas_long," of being vaccinated given mother uneducated compared to any education")
+axsttl <- paste(meas_long," of being vaccinated given mother has no formal education compared to any education")
 
 cols_to_use <- names(df)[grep("none|r_any", names(df))]
 
