@@ -52,7 +52,8 @@ homemade_forest <- function(meta_in, cols_to_use, axistitle, lg = FALSE){
     mutate(col = factor(col, levels = c("A", "B", "C", "D")))
   
   ncol <- length(unique(tmp$simple_country))
-  palcols <- c("black", rep(gtools::permute(met.brewer("Juarez")), length.out = ncol-1) )
+  #palcols <- c("black", rep(gtools::permute(met.brewer("Juarez")), length.out = ncol-1) )
+  palcols <- c("black", rep(met.brewer("Renoir")[c(2,7)], length.out = ncol-1) )
   
   if(!lg){
     tmp <- tmp %>% mutate(yi = exp(yi), ci.lb = exp(ci.lb), ci.ub = exp(ci.ub))
@@ -85,7 +86,7 @@ homemade_forest <- function(meta_in, cols_to_use, axistitle, lg = FALSE){
                   y = study,
                   colour = simple_country),
               size = 4)+
-    geom_vline(xintercept = ifelse(lg,0,1), colour = viridis::turbo(9)[8], linetype = "dashed", size = 1)+
+    geom_vline(xintercept = ifelse(lg,0,1), colour = met.brewer("Renoir")[8], linetype = "dashed", size = 1)+
     
     coord_cartesian(xlim = c(minvalue,maxvalue+0.8))+
     labs(y = "", x = axistitle)+
