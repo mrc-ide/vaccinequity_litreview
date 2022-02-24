@@ -31,6 +31,7 @@ df$Country_split <-  unlist(lapply(seq_along(df$Country),
 df <- df %>% mutate(simple_country = case_when(grepl(";", Country_split)~ "VARIOUS",
                                                grepl("COUNTRIES", Country_split)~"VARIOUS",
                                                grepl("LMIC", Country_split)~"VARIOUS",
+                                               grepl("BURKINA FASO AND KENYA", Country_split)~"VARIOUS",
                                                TRUE~Country_split))
 
 # clean year of data

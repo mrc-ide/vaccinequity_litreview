@@ -3,6 +3,7 @@ library(ggplot2)
 library(CoordinateCleaner)
 library(countrycode)
 library(ggrepel)
+library(MetBrewer)
 
 
 # read *cleaned* data
@@ -98,4 +99,22 @@ g_world
 ggsave("figures/studies_by_country.png", height = 10, width = 12)
 
 world_map %>%ungroup() %>% select(region, tot_count) %>% unique() %>% write.csv("study_count.csv", row.names = FALSE)
+#================================================================================================================
+# Study age ranges
+
+df %>%
+  mutate(age_min = as.numeric(age_min), age_max = as.numeric(age_max)) %>%
+  mutate(simple_lab = paste0(first_author_surname, ", ", simple_country)) %>%
+  
+  ggplot()+
+  #aes(y = reorder(simple_lab, simple_country), yend = reorder(simple_lab,simple_country), x = age_min, xend = age_max, colour = simple_country)+
+  aes(y =  simple_country, yend = simple_country, x = age_min, xend = age_max, colour = simple_country)+
+  geom_segment(size = 5, alpha = 0.3)+
+  theme_minimal()+
+  theme(legend.position = "none")+
+  labs(x = "Age of vaccinees", y = "Country of study")+
+  scale_x_continuous(breaks = seq(0, max(as.numeric(df$age_max), na.rm = TRUE), by = 5))+
+  scale_colour_manual(values = met.brewer("Renoir", n = length(unique(df$simple_country)), type = "continuous"))
+
+ggsave("figures/study_age_range.png", height = 10, width = 12)
 #================================================================================================================
