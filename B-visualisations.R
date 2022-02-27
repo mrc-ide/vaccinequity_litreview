@@ -114,7 +114,9 @@ df %>%
   theme(legend.position = "none")+
   labs(x = "Age of vaccinees", y = "Country of study")+
   scale_x_continuous(breaks = seq(0, max(as.numeric(df$age_max), na.rm = TRUE), by = 5))+
-  scale_colour_manual(values = met.brewer("Renoir", n = length(unique(df$simple_country)), type = "continuous"))
+  scale_colour_manual(values = met.brewer("Renoir", n = length(unique(df$simple_country)), type = "continuous"))+
+  geom_text(aes(x = 80, y = "CHINA"), label = "Li 2016", colour = "black")+
+geom_text(aes(x = 60, y = "BRAZIL"), label = "Martins 2015", colour = "black")
 
 ggsave("figures/study_age_range.png", height = 10, width = 12)
 #================================================================================================================
