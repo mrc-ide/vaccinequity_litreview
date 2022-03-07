@@ -2,6 +2,7 @@ library(dplyr)
 library(ggplot2)
 library(metafor)
 library(MetBrewer)
+library(countrycode)
 
 R.utils::sourceDirectory("functions", modifiedOnly = FALSE)
 
@@ -11,6 +12,10 @@ df <- df %>% janitor::clean_names()
 
 meas <- "RR"
 meas_long <- ifelse(meas=="RR", "Risk ratio", "Odds ratio")
+
+df <- df %>% mutate(simple_iso = countrycode(simple_country, origin = "country.name", destination = "iso3c"))
+df <- df %>% mutate(simple_iso = ifelse(simple_country=="VARIOUS", "*VAR", simple_iso))
+
 # gender =========================================================================
 # examining relative risk of being female and vaccinated
 cols_to_use <- names(df)[grep("male", names(df))]
@@ -21,7 +26,7 @@ axsttl <- paste0(meas_long," of being vaccinated given female compared to male")
 
 p <- homemade_forest(gender_out, cols_to_use, axsttl)
 
-ggsave(plot = p, filename = paste0("figures/gender_", meas,".png"), height = 12, width = 10)
+ggsave(plot = p, filename = paste0("figures/gender_", meas,".png"), height = 14, width = 10)
 
 # additionally interested in the trend over time
 p <- meas_over_time(gender_out, cols_to_use, axsttl, meas)
@@ -67,7 +72,7 @@ axsttl <- paste(meas_long," of being vaccinated given rural compared to urban")
 
 p <- homemade_forest(rural_out, cols_to_use,axsttl)
 
-ggsave(plot = p, filename = paste0("figures/urban_",meas,".png"), height = 12, width = 10)
+ggsave(plot = p, filename = paste0("figures/urban_",meas,".png"), height = 14, width = 10)
 
 # additionally interested in the trend over time
 p <- meas_over_time(rural_out, cols_to_use, axsttl,meas)

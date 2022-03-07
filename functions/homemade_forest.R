@@ -19,12 +19,13 @@ homemade_forest <- function(meta_in, cols_to_use, axistitle, lg = FALSE){
                     rem = TRUE,
                     year_of_data_min = 1900,
                     pval = tmp_rma$pval,
-                    simple_country = "")
+                    simple_country = "",
+                    simple_iso = "")
   
   #stick it together and tidy
   tmp <- tmp_escalc %>%
     select( yi, ci.lb, ci.ub,covidence_id, year_of_article, first_author_surname, 
-            year_of_data_min, year_of_data_max, simple_country,
+            year_of_data_min, year_of_data_max, simple_country, simple_iso,
             !!cols_to_use) %>%
     mutate(rem = FALSE) %>%
     bind_rows(rem) %>%
@@ -35,8 +36,7 @@ homemade_forest <- function(meta_in, cols_to_use, axistitle, lg = FALSE){
     mutate(simple_country = R.utils::capitalize(tolower(simple_country))) %>%
     mutate(simple_country = ifelse(simple_country == "South africa", "South Africa", simple_country)) %>%
     mutate(study = paste0(first_author_surname, " ", 
-                          year_of_article, " (", data_years, ") ", 
-                          simple_country )) %>%
+                          year_of_article, " (", data_years, ")" )) %>%
     mutate(study = ifelse(rem %in% TRUE, " Random Effects Model", study)) 
   
   
@@ -51,7 +51,7 @@ homemade_forest <- function(meta_in, cols_to_use, axistitle, lg = FALSE){
                                         yi < 0 ~ "C")) %>%
     mutate(col = factor(col, levels = c("A", "B", "C", "D")))
   
-  ncol <- length(unique(tmp$simple_country))
+  ncol <- length(unique(tmp$simple_iso))
   #palcols <- c("black", rep(gtools::permute(met.brewer("Juarez")), length.out = ncol-1) )
   palcols <- c("black", rep(met.brewer("Renoir")[c(2,7)], length.out = ncol-1) )
   
@@ -60,7 +60,7 @@ homemade_forest <- function(meta_in, cols_to_use, axistitle, lg = FALSE){
   }
   
   tmp %>% 
-    arrange(simple_country,year_of_data_min) %>%
+    arrange(simple_iso,year_of_data_min) %>%
     mutate(study = factor(study, levels = study)) %>%
     unique() %>%
     filter(!is.na(yi)) %>%
@@ -69,32 +69,35 @@ homemade_forest <- function(meta_in, cols_to_use, axistitle, lg = FALSE){
     geom_point(aes(x = yi,
                    y = study,
                    shape = rem,
-                   colour = simple_country,
+                   colour = simple_iso,
                    size = size,
                    alpha = rem)) +
     geom_errorbarh(aes(xmin = ci.lb,
                        xmax = ci.ub,
                        y = study,
-                       colour = simple_country,
+                       colour = simple_iso,
                        alpha = rem), 
                    size=1)+
-    geom_text(aes(label = paste0(round(yi, 2), 
-                                 " [", round(ci.lb,2), 
-                                 ", ", 
+    geom_text(aes(label = paste0(round(yi, 2),
+                                 " [", round(ci.lb,2),
+                                 ", ",
                                  round(ci.ub,2), "]"),
                   x = maxvalue + 0.3,
                   y = study,
-                  colour = simple_country),
+                  colour = simple_iso),
               size = 4)+
     geom_vline(xintercept = ifelse(lg,0,1), colour = met.brewer("Renoir")[8], linetype = "dashed", size = 1)+
     
-    coord_cartesian(xlim = c(minvalue,maxvalue+0.8))+
+    coord_cartesian(xlim = c(minvalue,maxvalue+0.5))+
     labs(y = "", x = axistitle)+
     theme_minimal() +
     scale_shape_manual(values = c(15, 18)) +
     scale_alpha_discrete(range = c(0.7, 1))+
-    theme(legend.position = "none", axis.text = element_text(size = 12)) +
+    theme(legend.position = "none", axis.text = element_text(size = 12), axis.text.y = element_text(hjust = 0),
+          strip.background = element_rect(fill = met.brewer("Renoir")[8], color = met.brewer("Renoir")[8]), 
+          strip.text = element_text(colour = "white", size = 10, face = "bold")) +
     scale_size(range = c(1, 5))+
-    scale_color_manual(values = palcols)
+    scale_color_manual(values = palcols)+
+    facet_grid(simple_iso~., scales = "free_y", space = "free", switch = "y")
   
 }
