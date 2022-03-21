@@ -120,3 +120,23 @@ geom_text(aes(x = 60, y = "BRAZIL"), label = "Martins 2015", colour = "black")
 
 ggsave("figures/study_age_range.png", height = 10, width = 12)
 #================================================================================================================
+
+#tidy table for si
+
+df %>%
+  select(year_of_article, year_of_data_min, year_of_data_max, first_author_surname, type_of_study, vaccine, simple_country,  age_min, age_max, grade) %>%
+  mutate(year_of_data_tidy = ifelse(year_of_data_min==year_of_data_max,
+                                    year_of_data_min, 
+                                    paste0(year_of_data_min," - ", year_of_data_max))) %>%
+  select(-c(year_of_data_min, year_of_data_max)) %>%
+  arrange(first_author_surname) %>%
+  rename(`Publication year`= year_of_article,
+         `Year of data` = year_of_data_tidy,
+         `Author surname` = first_author_surname, 
+         `Study type` = type_of_study,
+         Vaccine = vaccine,
+         Countries = simple_country,
+         `Min age` = age_min, 
+         `Max age` = age_max,
+         Grade = grade) %>%
+  write.csv("all_studies_table.csv", row.names = FALSE)
