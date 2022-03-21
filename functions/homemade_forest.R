@@ -1,4 +1,7 @@
 homemade_forest <- function(meta_in, cols_to_use, axistitle, lg = FALSE){
+  
+  mbpal <- "Cross"
+  
   # split out summary and rma
   tmp_escalc <- summary(meta_in$escalc_out) %>% 
     mutate_at(vars(cols_to_use), as.numeric)
@@ -20,12 +23,13 @@ homemade_forest <- function(meta_in, cols_to_use, axistitle, lg = FALSE){
                     year_of_data_min = 1900,
                     pval = tmp_rma$pval,
                     simple_country = "",
-                    simple_iso = "")
+                    simple_iso = "",
+                    simple_vaccine = " REM")
   
   #stick it together and tidy
   tmp <- tmp_escalc %>%
     select( yi, ci.lb, ci.ub,covidence_id, year_of_article, first_author_surname, 
-            year_of_data_min, year_of_data_max, simple_country, simple_iso,
+            year_of_data_min, year_of_data_max, simple_country, simple_iso,simple_vaccine,
             !!cols_to_use) %>%
     mutate(rem = FALSE) %>%
     bind_rows(rem) %>%
@@ -51,9 +55,7 @@ homemade_forest <- function(meta_in, cols_to_use, axistitle, lg = FALSE){
                                         yi < 0 ~ "C")) %>%
     mutate(col = factor(col, levels = c("A", "B", "C", "D")))
   
-  ncol <- length(unique(tmp$simple_iso))
-  #palcols <- c("black", rep(gtools::permute(met.brewer("Juarez")), length.out = ncol-1) )
-  palcols <- c("black", rep(met.brewer("Renoir")[c(2,7)], length.out = ncol-1) )
+  palcols <- c("black", met.brewer(mbpal, n = length(unique(tmp$simple_vaccine)), type = "continuous") )
   
   if(!lg){
     tmp <- tmp %>% mutate(yi = exp(yi), ci.lb = exp(ci.lb), ci.ub = exp(ci.ub))
@@ -69,13 +71,13 @@ homemade_forest <- function(meta_in, cols_to_use, axistitle, lg = FALSE){
     geom_point(aes(x = yi,
                    y = study,
                    shape = rem,
-                   colour = simple_iso,
+                   colour =simple_vaccine,
                    size = size,
                    alpha = rem)) +
     geom_errorbarh(aes(xmin = ci.lb,
                        xmax = ci.ub,
                        y = study,
-                       colour = simple_iso,
+                       colour =simple_vaccine,
                        alpha = rem), 
                    size=1)+
     geom_text(aes(label = paste0(round(yi, 2),
@@ -84,20 +86,21 @@ homemade_forest <- function(meta_in, cols_to_use, axistitle, lg = FALSE){
                                  round(ci.ub,2), "]"),
                   x = maxvalue + 0.3,
                   y = study,
-                  colour = simple_iso),
+                  colour = simple_vaccine),
               size = 4)+
-    geom_vline(xintercept = ifelse(lg,0,1), colour = met.brewer("Renoir")[8], linetype = "dashed", size = 1)+
+    geom_vline(xintercept = ifelse(lg,0,1), colour = met.brewer(mbpal)[8], linetype = "dashed", size = 1)+
     
     coord_cartesian(xlim = c(minvalue,maxvalue+0.5))+
-    labs(y = "", x = axistitle)+
+    labs(y = "", x = axistitle, colour = "Vaccines")+
     theme_minimal() +
     scale_shape_manual(values = c(15, 18)) +
     scale_alpha_discrete(range = c(0.7, 1))+
-    theme(legend.position = "none", axis.text = element_text(size = 12), axis.text.y = element_text(hjust = 0),
-          strip.background = element_rect(fill = met.brewer("Renoir")[8], color = met.brewer("Renoir")[8]), 
+    theme(legend.position = "bottom", axis.text = element_text(size = 12), axis.text.y = element_text(hjust = 0),
+          strip.background = element_rect(fill = met.brewer(mbpal)[8], color = met.brewer(mbpal)[8]), 
           strip.text = element_text(colour = "white", size = 10, face = "bold")) +
     scale_size(range = c(1, 5))+
     scale_color_manual(values = palcols)+
-    facet_grid(simple_iso~., scales = "free_y", space = "free", switch = "y")
+    facet_grid(simple_iso~., scales = "free_y", space = "free", switch = "y")+
+    guides(size = FALSE, alpha = FALSE, shape = FALSE, colour = guide_legend(nrow = 1))
   
 }

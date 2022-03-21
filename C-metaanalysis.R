@@ -16,6 +16,9 @@ meas_long <- ifelse(meas=="RR", "Risk ratio", "Odds ratio")
 df <- df %>% mutate(simple_iso = countrycode(simple_country, origin = "country.name", destination = "iso3c"))
 df <- df %>% mutate(simple_iso = ifelse(simple_country=="VARIOUS", "*VAR", simple_iso))
 
+df <- df %>% mutate(simple_vaccine = ifelse(grepl("1974 EPI", vaccine), "1974 EPI +", vaccine))
+df <- df %>% mutate(simple_vaccine = factor(simple_vaccine))
+
 # gender =========================================================================
 # examining relative risk of being female and vaccinated
 cols_to_use <- names(df)[grep("male", names(df))]
