@@ -101,6 +101,6 @@ homemade_forest <- function(meta_in, cols_to_use, axistitle, lg = FALSE){
     scale_size(range = c(1, 5))+
     scale_color_manual(values = palcols)+
     facet_grid(simple_iso~., scales = "free_y", space = "free", switch = "y")+
-    guides(size = FALSE, alpha = FALSE, shape = FALSE, colour = guide_legend(nrow = 1))
+    guides(size = FALSE, alpha = FALSE, shape = FALSE, colour = guide_legend(nrow = 2))
   
 }
